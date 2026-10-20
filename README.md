@@ -3,7 +3,7 @@
 Gameplay systems I built in Luau for Roblox. Each folder is a working system taken from one of my places.
 
 **Portfolio:** https://lumellloo1-bit.github.io/roblox-scripts/  
-**Contact:** Discord `lumello` · open for commissions, paid in USD.
+**Contact:** Discord `lumello`
 
 ---
 
