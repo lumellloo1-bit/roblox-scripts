@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Lumello, Roblox scripter: custom vehicle physics, music-synced sound systems, full game loops and building.">
+<title>Lumello Luau Scripter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: dark studio showcase — sticky nav, hero with facts and showreel, ranked case studies alternating video/text, specialties, process, contact band. Single deliberate dark theme. */
+:root {
+  --bg: #0A0D12;
+  --panel: #11161E;
+  --panel-2: #161C26;
+  --line: #222B38;
+  --ink: #E9EDF3;
+  --muted: #8C96A8;
+  --accent: #74A9FF;
+  --accent-ink: #0A0D12;
+  --warm: #FFB86B;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.6;
+}
+a { color: inherit; }
+a:focus-visible, button:focus-visible, video:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+
+.container {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding-left: max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
+}
+
+/* nav */
+.nav {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  background: rgba(10, 13, 18, 0.86);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.nav .container { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; }
+.brand { font-family: var(--display); font-weight: 800; font-size: 20px; letter-spacing: -0.01em; text-decoration: none; }
+.brand span { color: var(--accent); }
+.nav-links { display: flex; align-items: center; gap: 24px; }
+.nav-links a { text-decoration: none; color: var(--muted); font-size: 14px; font-weight: 500; }
+.nav-links a:hover { color: var(--ink); }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font: 600 15px var(--body); padding: 11px 20px; border-radius: 8px; text-decoration: none;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer;
+}
+.btn:hover { border-color: #33405250; background: var(--panel-2); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover { background: #8DB9FF; }
+.btn.small { padding: 8px 14px; font-size: 14px; }
+@media (max-width: 720px) { .nav-links a:not(.btn) { display: none; } }
+
+/* hero */
+.hero { padding-block: 72px 40px; display: grid; gap: 40px; }
+.eyebrow { font: 500 13px var(--mono); color: var(--warm); letter-spacing: 0.08em; text-transform: uppercase; }
+.hero h1 {
+  font-family: var(--display); font-weight: 800; letter-spacing: -0.025em;
+  font-size: clamp(40px, 7vw, 84px); line-height: 0.98; margin: 14px 0 0; max-width: 14ch; text-wrap: balance;
+}
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero .lede { font-size: 19px; color: var(--muted); max-width: 58ch; margin: 22px 0 0; text-wrap: pretty; }
+.hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; align-items: center; }
+.status { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+.status i { width: 8px; height: 8px; border-radius: 50%; background: #4ADE80; box-shadow: 0 0 0 4px #4ADE8022; display: inline-block; }
+
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.fact { padding: 20px 20px 20px 0; display: grid; gap: 4px; min-width: 0; }
+.fact strong { font-family: var(--display); font-weight: 700; font-size: 22px; letter-spacing: -0.01em; }
+.fact span { color: var(--muted); font-size: 14px; }
+
+.reel { display: grid; gap: 12px; }
+.reel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.reel-head h2 { margin: 0; font-family: var(--display); font-size: 22px; font-weight: 700; }
+.reel-head span { font: 500 13px var(--mono); color: var(--muted); }
+
+video {
+  display: block; width: 100%; max-width: 100%; aspect-ratio: 16 / 9;
+  background: #000; border-radius: 10px; border: 1px solid var(--line); object-fit: contain;
+}
+
+/* sections */
+section.block { padding-block: 72px; border-top: 1px solid var(--line); }
+.section-head { display: grid; gap: 10px; margin-bottom: 40px; max-width: 70ch; }
+.section-head h2 { font-family: var(--display); font-weight: 800; font-size: clamp(30px, 4.4vw, 48px); line-height: 1.05; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+.section-head p { margin: 0; color: var(--muted); font-size: 17px; }
+
+/* case studies */
+.cases { display: grid; gap: 72px; }
+.case { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+.case.flip { grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); }
+.case.flip .media { order: 2; }
+@media (max-width: 880px) {
+  .case, .case.flip { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .case.flip .media { order: 0; }
+}
+.media { display: grid; gap: 12px; min-width: 0; }
+.media figure { margin: 0; display: grid; gap: 8px; }
+.media figcaption { font-size: 13px; color: var(--muted); }
+.case-body { display: grid; gap: 16px; min-width: 0; }
+.case-num { font: 500 13px var(--mono); color: var(--warm); letter-spacing: 0.06em; text-transform: uppercase; }
+.case h3 { font-family: var(--display); font-weight: 700; font-size: clamp(26px, 3vw, 34px); line-height: 1.1; letter-spacing: -0.015em; margin: 0; text-wrap: balance; }
+.case p { margin: 0; color: #C7CEDA; }
+.features { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.features li { display: grid; grid-template-columns: 14px 1fr; gap: 10px; font-size: 15px; color: #C7CEDA; }
+.features li::before { content: ""; width: 6px; height: 6px; margin-top: 9px; border-radius: 1px; background: var(--accent); }
+.features b { color: var(--ink); font-weight: 600; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tags span { font: 500 12px var(--mono); padding: 4px 9px; border-radius: 5px; background: var(--panel-2); border: 1px solid var(--line); color: var(--muted); }
+.links { display: flex; flex-wrap: wrap; gap: 18px; }
+.links a { color: var(--accent); font-weight: 600; text-decoration: none; font-size: 15px; }
+.links a:hover { text-decoration: underline; }
+pre {
+  margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px;
+  font: 12.5px/1.65 var(--mono); overflow-x: auto; color: #C7CEDA;
+}
+pre .k { color: var(--accent); }
+pre .n { color: var(--warm); }
+.pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+
+/* specialties */
+.skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.skill { background: var(--bg); padding: 24px; display: grid; gap: 8px; align-content: start; }
+.skill strong { font-family: var(--display); font-size: 20px; font-weight: 700; }
+.skill span { color: var(--muted); font-size: 15px; }
+
+/* process */
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+.step { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 22px; display: grid; gap: 8px; align-content: start; }
+.step .n { font: 500 13px var(--mono); color: var(--warm); }
+.step strong { font-family: var(--display); font-size: 19px; font-weight: 700; }
+.step span { color: var(--muted); font-size: 15px; }
+
+/* contact */
+.contact { padding-block: 72px 96px; border-top: 1px solid var(--line); }
+.contact-card {
+  border: 1px solid var(--line); border-radius: 14px; padding: clamp(24px, 5vw, 48px);
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  display: grid; gap: 24px;
+}
+.contact-card h2 { font-family: var(--display); font-weight: 800; font-size: clamp(30px, 4.4vw, 48px); letter-spacing: -0.02em; line-height: 1.05; margin: 0; max-width: 18ch; text-wrap: balance; }
+.contact-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
+.handle { display: grid; gap: 2px; }
+.handle small { font: 500 12px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+.handle b { font: 500 26px var(--mono); }
+.terms { display: flex; flex-wrap: wrap; gap: 10px 24px; color: var(--muted); font-size: 14px; }
+footer { padding-block: 24px 40px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); }
+footer .container { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+</style>
+<style>body{margin:0}img{max-width:100%}</style>
+</head>
+<body>
+
+
+<nav class="nav">
+  <div class="container">
+    <a class="brand" href="#top">lumello<span>.</span></a>
+    <div class="nav-links">
+      <a href="#work">Work</a>
+      <a href="#specialties">Specialties</a>
+      <a href="#process">Process</a>
+      <a class="btn primary small" href="#contact">Hire me</a>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="container">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">Roblox scripter · Luau</div>
+        <h1>Gameplay systems that <em>feel right</em> to play.</h1>
+        <p class="lede">I build the systems that make a Roblox game work: physics-based vehicles, music-driven events, full competitive game loops and the environments around them.</p>
+        <div class="hero-cta">
+          <a class="btn primary" href="#contact">Start a project</a>
+          <a class="btn" href="#work">See my work</a>
+          <span class="status"><i></i>Available for commissions</span>
+        </div>
+      </div>
+
+      <div class="facts">
+        <div class="fact"><strong>From scratch</strong><span>Vehicle physics without Roblox constraints</span></div>
+        <div class="fact"><strong>Published game</strong><span>Rekordo Obby, translated into 40+ languages</span></div>
+        <div class="fact"><strong>Player-driven events</strong><span>Song requests with a custom light show per track</span></div>
+        <div class="fact"><strong>Paid in USD</strong><span>PayPal or Wise, 50% upfront</span></div>
+      </div>
+
+      <div class="reel">
+        <div class="reel-head">
+          <h2>Showreel</h2>
+          <span>1:12 · sound on</span>
+        </div>
+        <video src="media/reel.mp4" poster="media/reel.jpg" controls playsinline preload="metadata"></video>
+      </div>
+    </header>
+  </div>
+
+  <section class="block" id="work">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Selected work</div>
+        <h2>Systems, ranked by what they took to build.</h2>
+        <p>Every clip is recorded from my own places. Captions explain what each part of the system is doing.</p>
+      </div>
+
+      <div class="cases">
+
+        <article class="case">
+          <div class="media">
+            <video src="media/vehicle.mp4" poster="media/vehicle.jpg" controls playsinline preload="metadata"></video>
+          </div>
+          <div class="case-body">
+            <div class="case-num">01 · Vehicle physics</div>
+            <h3>Custom physics vehicle system</h3>
+            <p>Cars that don't use Roblox constraints. Each wheel casts its own ray, solves its suspension and pushes real forces into the chassis. Turning comes from tire forces, so grip loss and drifting happen naturally.</p>
+            <ul class="features">
+              <li><span><b>Raycast suspension</b> with spring and damper per wheel, tuned by damping ratio</span></li>
+              <li><span><b>Slip-angle tire grip</b> using a simplified Pacejka curve</span></li>
+              <li><span><b>Ackermann steering</b> with a speed-sensitive angle limit</span></li>
+              <li><span><b>Drivetrain:</b> torque curve, 6-speed automatic, reverse, hill hold, drag and downforce</span></li>
+              <li><span><b>Feel:</b> nose dive when braking, shift jolt, engine sound tied to RPM</span></li>
+            </ul>
+<pre><span class="k">local</span> slipAngle = math.atan2(lateralSpeed, math.abs(longitudinalSpeed) + <span class="n">0.5</span>)
+<span class="k">local</span> grip = math.sin(shapeFactor * math.atan(stiffnessFactor * slipAngle))</pre>
+            <div class="tags"><span>Raycasting</span><span>VectorForce</span><span>RunService</span><span>~1,000 lines</span></div>
+            <div class="links"><a href="https://github.com/lumellloo1-bit/roblox-scripts/tree/main/CarSystem" target="_blank" rel="noopener">View source</a></div>
+          </div>
+        </article>
+
+        <article class="case flip">
+          <div class="media">
+            <video src="media/dance.mp4" poster="media/dance.jpg" controls playsinline preload="metadata"></video>
+          </div>
+          <div class="case-body">
+            <div class="case-num">02 · Live events</div>
+            <h3>Music-synced sound system</h3>
+            <p>A complete party venue. Players request songs, design the light show for their track and take over the DJ booth while it plays. Every light, speaker and effect reacts to the music.</p>
+            <ul class="features">
+              <li><span><b>Song requests</b> by audio ID, validated with MarketplaceService: must exist, be audio and not already be queued</span></li>
+              <li><span><b>Loudness analysis:</b> each song is measured for average and peak loudness so lights scale to it</span></li>
+              <li><span><b>Per-song light show:</b> beat color, ambient color and intensity, smoke and fire colors</span></li>
+              <li><span><b>Requester becomes the DJ:</b> their avatar is built and placed at the booth</span></li>
+              <li><span><b>Vote to skip</b> when more than half the server agrees, with a default playlist fallback</span></li>
+              <li><span><b>Stage effects:</b> pulsing speakers, moving spotlights, smoke and fire machines, light-up floor</span></li>
+              <li><span><b>Venue extras:</b> NPC staff serving food and drinks, animated doors, bathroom occupancy</span></li>
+            </ul>
+            <div class="tags"><span>RemoteEvents</span><span>PlaybackLoudness</span><span>HumanoidDescription</span><span>54 scripts</span></div>
+            <div class="links"><a href="https://github.com/lumellloo1-bit/roblox-scripts/tree/main/SoundSystem" target="_blank" rel="noopener">View source</a></div>
+          </div>
+        </article>
+
+        <article class="case">
+          <div class="media">
+            <video src="media/obby.mp4" poster="media/obby.jpg" controls playsinline preload="metadata"></video>
+            <figure>
+              <video src="media/replay.mp4" poster="media/replay.jpg" controls playsinline preload="metadata"></video>
+              <figcaption>Obby browser and replay system</figcaption>
+            </figure>
+          </div>
+          <div class="case-body">
+            <div class="case-num">03 · Published game</div>
+            <h3>Rekordo Obby</h3>
+            <p>A competitive obby built as a full product: core gameplay, competition, social features and the tools to run it.</p>
+            <ul class="features">
+              <li><span><b>Ghost battles:</b> race against recorded runs of other players</span></li>
+              <li><span><b>Live timer and placement</b> that update while you run, with a podium at the finish</span></li>
+              <li><span><b>Replay system</b> with free camera and playback speed controls</span></li>
+              <li><span><b>Obby browser</b> with records and difficulty for every level</span></li>
+              <li><span><b>Tournaments, global leaderboard, admin panel and moderation</b></span></li>
+              <li><span><b>40+ languages</b></span></li>
+            </ul>
+            <div class="tags"><span>DataStores</span><span>Replays</span><span>UI</span><span>Localization</span></div>
+            <div class="links"><a href="https://www.roblox.com/games/121644455085455" target="_blank" rel="noopener">Play on Roblox</a></div>
+          </div>
+        </article>
+
+        <article class="case flip">
+          <div class="media">
+            <video src="media/skywars.mp4" poster="media/skywars.jpg" controls playsinline preload="metadata"></video>
+          </div>
+          <div class="case-body">
+            <div class="case-num">04 · Round-based PvP</div>
+            <h3>Skywars</h3>
+            <p>Players spawn on floating islands, mine for money, build bridges and fight until one is left. Between rounds they spend their earnings in a tiered shop.</p>
+            <ul class="features">
+              <li><span><b>Round loop:</b> lobby, countdown, timer, players remaining and winner detection</span></li>
+              <li><span><b>Bridge building</b> with placeable blocks</span></li>
+              <li><span><b>Combat</b> with swords and bows</span></li>
+              <li><span><b>Tiered shop:</b> potions, blocks, swords, arrows and pickaxes from Wood to Obsidian</span></li>
+            </ul>
+            <div class="tags"><span>Round system</span><span>Economy</span><span>Combat</span></div>
+          </div>
+        </article>
+
+        <article class="case">
+          <div class="media pair">
+            <figure>
+              <video src="media/store.mp4" poster="media/store.jpg" controls playsinline preload="metadata"></video>
+              <figcaption>"Cuidado con el Perro" store interior</figcaption>
+            </figure>
+            <figure>
+              <video src="media/forest.mp4" poster="media/forest.jpg" controls playsinline preload="metadata"></video>
+              <figcaption>Forest campaign map</figcaption>
+            </figure>
+          </div>
+          <div class="case-body">
+            <div class="case-num">05 · Building</div>
+            <h3>Environments and interiors</h3>
+            <p>Spaces built by hand, with lighting set up for the mood of each place.</p>
+            <ul class="features">
+              <li><span><b>Store interior:</b> stocked shelves, displays, mannequins, signage and warm lighting</span></li>
+              <li><span><b>Forest campaign map:</b> fog, a cabin and lighting tuned for tension</span></li>
+            </ul>
+            <div class="tags"><span>Building</span><span>Lighting</span><span>Atmosphere</span></div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="specialties">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Specialties</div>
+        <h2>What I can build for your game.</h2>
+      </div>
+      <div class="skills">
+        <div class="skill"><strong>Vehicle physics</strong><span>Cars, karts and custom chassis with real suspension, grip and drivetrains.</span></div>
+        <div class="skill"><strong>Game loops</strong><span>Rounds, timers, leaderboards, shops, battles, replays and data saving.</span></div>
+        <div class="skill"><strong>Audio-reactive systems</strong><span>Music queues, song requests and lights or effects driven by loudness.</span></div>
+        <div class="skill"><strong>Player-facing UI</strong><span>Menus, HUDs, shops and setup flows that are clear to use.</span></div>
+        <div class="skill"><strong>Procedural generation</strong><span>Levels generated from parameters, tuned to real player movement.</span></div>
+        <div class="skill"><strong>Building and lighting</strong><span>Interiors and maps with atmosphere set up for the game's mood.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="process">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Process</div>
+        <h2>How a commission works.</h2>
+      </div>
+      <div class="steps">
+        <div class="step"><span class="n">01</span><strong>Tell me the idea</strong><span>Send what you need on Discord, with references if you have them.</span></div>
+        <div class="step"><span class="n">02</span><strong>Get a clear quote</strong><span>A fixed price per task or an hourly rate, plus a delivery estimate.</span></div>
+        <div class="step"><span class="n">03</span><strong>See it working</strong><span>50% upfront, then video updates while I build it.</span></div>
+        <div class="step"><span class="n">04</span><strong>Delivery</strong><span>Remaining 50% on delivery. I hand over the files and help you set them up.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="container">
+      <div class="contact-card">
+        <h2>Have a system in mind? Let's build it.</h2>
+        <div class="contact-row">
+          <div class="handle">
+            <small>Discord</small>
+            <b id="discord-id">lumello</b>
+          </div>
+          <button class="btn primary" id="copy-discord" type="button">Copy username</button>
+        </div>
+        <div class="terms"><span>Paid in USD</span><span>PayPal or Wise</span><span>50% upfront · 50% on delivery</span><span>Spanish and English</span></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <span>Lumello · Roblox scripter</span>
+    <a href="https://github.com/lumellloo1-bit/roblox-scripts" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</footer>
+
+<script>
+const copyBtn = document.getElementById("copy-discord");
+copyBtn.addEventListener("click", () => {
+  const id = document.getElementById("discord-id");
+  const done = () => {
+    copyBtn.textContent = "Copied";
+    setTimeout(() => { copyBtn.textContent = "Copy username"; }, 1600);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(id.textContent).then(done, () => selectText(id));
+  } else {
+    selectText(id);
+  }
+});
+function selectText(el) {
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+const videos = document.querySelectorAll("video");
+videos.forEach(v => {
+  v.addEventListener("play", () => {
+    videos.forEach(o => { if (o !== v) o.pause(); });
+  });
+});
+</script>
+
+</body>
+</html>

@@ -2,6 +2,7 @@
 
 Gameplay systems I built in Luau for Roblox. Each folder is a working system taken from one of my places.
 
+**Portfolio:** https://lumellloo1-bit.github.io/roblox-scripts/  
 **Contact:** Discord `lumello` · open for commissions, paid in USD.
 
 ---
@@ -12,10 +13,10 @@ Cars that don't use Roblox constraints. Every wheel casts its own ray, solves it
 
 | File | What it does |
 |---|---|
-| `VehicleModule.luau` | Suspension, tire grip, steering, wheel spin, engine, gearbox, brakes and engine sound |
-| `CarLibrary.luau` | Tuning presets per car type (tires, steering, suspension, engine, transmission) |
-| `controller.client.luau` | Starts and stops client control when the player sits in or leaves the car |
-| `../models/CarSystem.rbxm` | The model with both modules, ready to drop into Studio |
+| [`VehicleModule.luau`](CarSystem/VehicleModule.luau) | Suspension, tire grip, steering, wheel spin, engine, gearbox, brakes and engine sound |
+| [`CarLibrary.luau`](CarSystem/CarLibrary.luau) | Tuning presets per car type (tires, steering, suspension, engine, transmission) |
+| [`controller.client.luau`](CarSystem/controller.client.luau) | Starts and stops client control when the player sits in or leaves the car |
+| [`models/CarSystem.rbxm`](models/CarSystem.rbxm) | The model with both modules, ready to drop into Studio |
 
 **How it works**
 
@@ -51,8 +52,8 @@ Open `places/SoundSystem.rbxl` in Studio to try it. The scripts in `SoundSystem/
 
 | File | Contents |
 |---|---|
-| `places/SoundSystem.rbxl` | The sound system venue with every script, model and effect |
-| `models/CarSystem.rbxm` | Vehicle system modules |
+| [`places/SoundSystem.rbxl`](places/SoundSystem.rbxl) | The sound system venue with every script, model and effect |
+| [`models/CarSystem.rbxm`](models/CarSystem.rbxm) | Vehicle system modules |
 
 ---
 
