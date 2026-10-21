@@ -1,3 +1,4 @@
+-- Discord: lumello | Roblox: lumellloo
 --//Servicios//--
 local ServerStorage = game:GetService("ServerStorage")
 local Players = game:GetService("Players")
