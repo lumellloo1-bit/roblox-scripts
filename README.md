@@ -48,11 +48,34 @@ Open `places/SoundSystem.rbxl` in Studio to try it. The scripts in `SoundSystem/
 
 ---
 
+## 3. Skywars — `Skywars/`
+
+Round-based PvP on floating islands. Players mine, build bridges, buy gear between rounds and fight until one is left. Open `places/Skywars.rbxl` in Studio to try it; the scripts in `Skywars/src/` follow the Studio hierarchy.
+
+**Features**
+
+- **Round loop** (`ServerScriptService/Scritpts/Ronda/RondaScript`): waits for the minimum number of players, picks a random island layout from a pool and varies its block colors, teleports players to their spawns, hands out gear, runs the round timer and intermission, and declares the winner.
+- **Rewards and progress:** coins and wins saved with DataStores, badges for wins and kills.
+- **Building** (`ToolScript/PosicionamientoDeBloque`, `QuitarBloque`): server-validated block placement with a per-round block limit, and block breaking with pickaxes.
+- **Weapons in 8 tiers** from Wood to Obsidian: swords with server-side damage, bows with server-side arrows and reload times, pickaxes and blocks. Every tier shares the same script and reads its stats from values.
+- **Potions:** health, speed, jump and a temporary shield.
+- **Shop** (`Store/BuyScript` + `StarterGui/Store/Manager`): purchases are checked on the server against the player's coins.
+- **Spectate mode:** players who are out can cycle the camera through the players still alive.
+- **Admin panel:** live tuning of weapon values and reload times.
+- **Anti-cheat:** void and position checks during the round.
+- **Song requests** in the lobby, with audio validation.
+- **Tournament mode:** teleports the whole server to the tournament place.
+
+Third-party pieces used in the place (ragdoll by DarielDev, shift-lock button, leaderboard and donation boards) are not included in `src/`.
+
+---
+
 ## Places and models
 
 | File | Contents |
 |---|---|
 | [`places/SoundSystem.rbxl`](places/SoundSystem.rbxl) | The sound system venue with every script, model and effect |
+| [`places/Skywars.rbxl`](places/Skywars.rbxl) | The Skywars game: lobby, islands, shop and every system |
 | [`models/CarSystem.rbxm`](models/CarSystem.rbxm) | Vehicle system modules |
 
 ---
@@ -60,5 +83,4 @@ Open `places/SoundSystem.rbxl` in Studio to try it. The scripts in `SoundSystem/
 ## Other work (in my portfolio)
 
 - **Rekordo Obby:** published competitive obby with ghost battles, live timer and placement, replays, tournaments, admin tools and 40+ languages.
-- **Skywars:** round-based PvP on floating islands with mining, bridge building, bows and a tiered shop.
 - **Building:** store interiors and atmospheric campaign maps.
